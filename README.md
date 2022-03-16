@@ -19,11 +19,11 @@ Ce dépôt inclut le code source initial fourni pour démarrer le BE ainsi qu’
 
 1. Création d’un compte git étudiant : Si vous ne disposez pas d’un compte git, connectez vous sur http://github.com/ et créez un compte par binôme. 
 
-2. Afin d’être capable de mettre à jour le code que vous aurez produit sur le dépôt central Github, il vous faudra créer un jeton d’accès qui jouera le rôle de mot de passe. Veuillez le sauvegarder, car il vous le sera demandé lors de l'accès au dépôt central. Pour ce faire, veuillez suivre les étapes décrites : https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+2. Afin d’être capable de mettre à jour le code que vous aurez produit sur le dépôt central Github, il vous faudra créer un token d’authentification qui jouera le rôle de mot de passe. Pour ce faire, veuillez suivre les étapes décrites : https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
 
 3. Création d’un dépôt Etudiant sur GitHub pour le BE prog. C & réseau
   
-   Créer une copie du dépôt template enseignant : https://github.com/rezo-insat/BE_Prog_C_Reseau.git , en vous y rendant et en cliquant sur le bouton « use this template » situé dans le coin en haut, plutôt à droite de la page. Il est conseillé de le choisir comme dépôt privé. Dans ce cas, veuillez rajouter le compte : rezo-insat comme collaborateur afin de permettre à vos enseignants d'accéder à votre dépôt. Pour ce faire, sélectionner le bouton "settings" puis "collaborators" et rajouter comme utilisateur : rezo-insat. La marche à suivre est décrite ci-après : https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/adding-outside-collaborators-to-repositories-in-your-organization
+   Créer une copie du dépôt template enseignant : https://github.com/rezo-insat/BE_Prog_C_Reseau.git , en vous y rendant et en cliquant sur le bouton « use this template » situé dans le coin en haut, plutôt à droite de la page. 
 
 4. Créer un clone local de votre dépôt Github, i.e. une copie locale du dépôt sur votre compte insa. 
   
@@ -34,7 +34,7 @@ Ce dépôt inclut le code source initial fourni pour démarrer le BE ainsi qu’
 
     Vous avez désormais une copie locale de votre dépôt, que vous pouvez mettre à jour et modifier à volonté au gré de votre avancement sur le BE. 
 
-5. Afin de nous permettre d’avoir accès à votre dépôt, merci de bien vouloir renseigner l'URL de votre dépôt sur le fichier (accessible depuis "Lien vers le fichier dépôts étudiants") se trouvant sur moodle (au bas de la section 3: "Bureau d'étude (BE) Prog C et Réseau").
+5. Afin de nous permettre d’avoir accès à votre dépôt, merci de bien vouloir renseigner le fichier se trouvant sur moodle.
 
 ## Build et lancement de tsock
 
@@ -49,13 +49,13 @@ Pour lancer l’exécutable, à titre d’exemple, en tant que puit :
 
 ## Suivi de versions de votre travail du BE
 
-Vous pouvez travailler comme vous le souhaitez sur le contenu du répertoire local. Vous pouvez mettre à jour les fichiers existants, rajouter d’autres ainsi que des dossiers et en retirer certains à votre guise. 
+Vous pouvez travailler comme vous le souhaitez sur le contenu du répertoire local. Vous pouvez mettre à jour les fichier existants, rajouter d’autres ainsi que des dossiers et en retirer certains à votre guise. 
 
 Pour répercuter les changements que vous faites sur votre répertoire de travail local sur le dépôt central GitHub, sur votre terminal, taper :
  
     git add .
     git commit -m «un message décrivant la mise à jour»
-    git push
+    git push origin main
 
 
 - Creation d’une branche pour la partie 2 du BE
