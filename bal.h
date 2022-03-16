@@ -38,10 +38,7 @@ typedef struct LETTRE
     int lg;
     char *message;
     struct LETTRE *suiv;
-} LETTRE;
-
-typedef struct LISTE_BAL
-{
+} LETTRE;@ext:GitHub.vscode-pull-request-github remotes
     struct BAL *first;
     struct BAL *last;
     struct BAL *current;
