@@ -20,7 +20,7 @@ données du réseau */
 #include <stdio.h>
 /* pour la gestion des erreurs */
 #include <errno.h>
-//
+
 
 typedef struct BAL
 {
@@ -38,7 +38,7 @@ typedef struct LETTRE
     int lg;
     char *message;
     struct LETTRE *suiv;
-} LETTRE;@ext:GitHub.vscode-pull-request-github remotes
+} LETTRE;
     struct BAL *first;
     struct BAL *last;
     struct BAL *current;

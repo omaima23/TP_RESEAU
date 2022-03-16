@@ -1,4 +1,5 @@
-//sfy_omom: /* librairie standard ... */
+#include <stdio.h>
+/* librairie standard ... */
 #include <stdlib.h>
 /* pour getopt */
 #include <unistd.h>
@@ -17,20 +18,8 @@ données du réseau */
 #include <stdio.h>
 /* pour la gestion des erreurs */
 #include <errno.h>
- //sfy_omom: #include <sys/types.h>
-/* constantes relatives aux domaines, types et protocoles */
-#include <sys/socket.h>
-/* constantes et structures propres au domaine UNIX */
-#include <sys/un.h>
-/* constantes et structures propres au domaine INTERNET */
-#include <netinet/in.h>
-/* structures retournées par les fonctions de gestion de la base de
-données du réseau */
-#include <netdb.h>
-/* pour les entrées/sorties */
-#include <stdio.h>
-/* pour la gestion des erreurs */
-#include <errno.h>
+//pour faire appel aux fonction de BAL 
+#include "bal.h"
 
 void construire_message (char *msg, char motif, int lg_message) {
     int i;
