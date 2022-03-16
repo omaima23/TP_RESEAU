@@ -391,19 +391,7 @@ void main (int argc, char **argv)
 		
 }	
 
-	/*if (nb_message != -1) {
-		if (source == 1)
-			printf("nb de tampons à envoyer : %d\n", nb_message);
-		else
-			printf("nb de tampons à recevoir : %d\n", nb_message);
-	} else {
-		if (source == 1) {
-			nb_message = 10 ;
-			printf("nb de tampons à envoyer = 10 par défaut\n");
-		} else
-		printf("nb de tampons à recevoir = infini\n");
 
-	}*/
 
     
 
