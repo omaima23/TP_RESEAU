@@ -20,7 +20,7 @@ données du réseau */
 #include <stdio.h>
 /* pour la gestion des erreurs */
 #include <errno.h>
-
+//
 
 typedef struct BAL
 {
