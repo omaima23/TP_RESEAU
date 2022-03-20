@@ -21,9 +21,32 @@ données du réseau */
 //pour faire appel aux fonction de BAL 
 #include "bal.h"
 
-void construire_message (char *msg, char motif, int lg_message) {
+
+struct message {
+		char *message;
+		struct message *message_suivante;
+	};
+
+	struct bal
+	{
+		int num_bal;
+		struct bal *bal_suivante;
+		struct message *lettre;
+
+	}	 ;
+	struct liste
+	{
+		struct bal *first;
+		struct bal *last;
+		struct bal *courant ;
+
+	}	 ;
+
+
+void construire_message (char *message, char motif, int lg_message) {
     int i;
-    for (i=0 ; i<lg_message; i++) msg[i] = motif; 
+    for (i=0 ; i<lg_message; i++) 
+	message[i] = motif; 
 }
 
 void afficher_message (char *message, int lg) {
@@ -55,30 +78,30 @@ void udp_puits(int port, int nbre_messages,int lg_message ) {
         printf("Erreur bind \n");
         exit(1); 
     }
-    // réception msgs 
+    // réception messages 
 
-    char * msg = malloc(sizeof(lg_message));
+    char * message = malloc(sizeof(lg_message));
     struct sockaddr_in adr_em; 
     int lg_adr_em= sizeof(adr_em);
     int octets_recus; 
 
     if (nbre_messages == -1) { // Reception infinie
         while (1) {
-            octets_recus= recvfrom(sock,msg,lg_message,0,(struct sockaddr *) &adr_em, &lg_adr_em);
+            octets_recus= recvfrom(sock,message,lg_message,0,(struct sockaddr *) &adr_em, &lg_adr_em);
             if (octets_recus == -1) {
                 printf("Erreur recevfrom \n");
                 exit(1); 
             }
-            afficher_message(msg, lg_message);  
+            afficher_message(message, lg_message);  
         }
     } else {
         for (int i=0; i < nbre_messages; i++) {
-            octets_recus= recvfrom(sock,msg,lg_message,0,(struct sockaddr *) &adr_em, &lg_adr_em);
+            octets_recus= recvfrom(sock,message,lg_message,0,(struct sockaddr *) &adr_em, &lg_adr_em);
             if (octets_recus == -1) {
                 printf("Erreur recevfrom \n");
                 exit(1); 
             }
-            afficher_message(msg, lg_message);  
+            afficher_message(message, lg_message);  
         }
     }
 
@@ -86,9 +109,9 @@ void udp_puits(int port, int nbre_messages,int lg_message ) {
     close(sock); 
 }
 
-void udp_source (int port, int nb_message, int lg_msg, char* nom_station)
+void udp_source (int port, int nb_message, int lg_message, char* nom_station)
 {
-    char message[lg_msg];
+    char message[lg_message];
 	int sock;
 	struct hostent *hp;
 	struct sockaddr_in adr_distant;
@@ -115,13 +138,13 @@ void udp_source (int port, int nb_message, int lg_msg, char* nom_station)
         memcpy((char*)&(adr_distant.sin_addr.s_addr),hp->h_addr,hp->h_length);
 
         /*Création du message*/
-        printf("SOURCE : lg_mess_emis=%d, port=%d, nb_envois=%d, TP=udp, dest=%s\n",lg_msg,port,nb_message,nom_station);
+        printf("SOURCE : lg_mess_emis=%d, port=%d, nb_envois=%d, TP=udp, dest=%s\n",lg_message,port,nb_message,nom_station);
 		for (int i=1; i<=nb_message; i++)
 	    {
-	    	construire_message(message, motif++,lg_msg);	
-			afficher_message(message, lg_msg);			
+	    	construire_message(message, motif++,lg_message);	
+			afficher_message(message, lg_message);			
 			/*Envoi d'un message*/
-	    		if ((sendto(sock, message, lg_msg, 0, (struct sockaddr*)&adr_distant, sizeof(adr_distant))) == -1)
+	    		if ((sendto(sock, message, lg_message, 0, (struct sockaddr*)&adr_distant, sizeof(adr_distant))) == -1)
 				{
 			  	printf("Erreur lors de l'envoi du message (sendto).\n");
 				exit(1);
@@ -141,9 +164,9 @@ void udp_source (int port, int nb_message, int lg_msg, char* nom_station)
 		}
  
 }
-void tcp_source(int port, int nb_message, int lg_msg, char* nom_station)
+void tcp_source(int port, int nb_message, int lg_message, char* nom_station)
 {
-    char message[lg_msg];
+    char message[lg_message];
 	/*Declarations*/
 	int sock; //Représentation interne du socket local
 	struct sockaddr_in adr_distant; //Adresse du socket distant
@@ -180,17 +203,17 @@ void tcp_source(int port, int nb_message, int lg_msg, char* nom_station)
 		exit(1);
 	}
 
-	printf("SOURCE : lg_mess_emis=%d, port=%d, nb_envois=%d, TP=tcp, dest=%s\n",lg_msg,port,nb_message,nom_station);
+	printf("SOURCE : lg_mess_emis=%d, port=%d, nb_envois=%d, TP=tcp, dest=%s\n",lg_message,port,nb_message,nom_station);
 
 	/*Phase de transfert de donnees*/
 	for (int i=1; i<=nb_message; i++)
 	{
   		/*Creation du message*/
-	    construire_message(message, motif++,lg_msg);
-		afficher_message(message, lg_msg);
+	    construire_message(message, motif++,lg_message);
+		afficher_message(message, lg_message);
 
 		/*Envoi d'un message*/
-    	if ((write(sock, message, lg_msg)) == -1)
+    	if ((write(sock, message, lg_message)) == -1)
 		{
 		  	printf("Erreur lors de l'envoi du message (write).\n");
 			exit(1);
@@ -219,10 +242,10 @@ void tcp_source(int port, int nb_message, int lg_msg, char* nom_station)
 
 
 /*-----------------------------------Gestion TCP puits------------------------------*/
-void tcp_puits(int port, int nb_message, int lg_msg, char* nom_station)
+void tcp_puits(int port, int nb_message, int lg_message, char* nom_station)
 {
 
-    char message[lg_msg];
+    char message[lg_message];
 	/*Declarations*/
 	int sock; //Représentation interne du socket local
 	int sock_bis; //Représention interne socket local dédié échange 
@@ -230,8 +253,8 @@ void tcp_puits(int port, int nb_message, int lg_msg, char* nom_station)
 	struct sockaddr_in adr_local; //Adresse du socket local
 	int lg_adr_distant = sizeof(adr_distant);
 	int lg_adr_local = sizeof(adr_local);
-	int lg_msg_recu = -1; 
-	//int taille_max_msg = 30;
+	int lg_message_recu = -1; 
+	//int taille_max_message = 30;
 
 	/*Phase d'etablissement de connexion*/
 
@@ -264,8 +287,8 @@ void tcp_puits(int port, int nb_message, int lg_msg, char* nom_station)
 	}
 
 	if (nb_message == -1){
-            printf("PUITS : lg_mess_lu_max=%d, port=%d, nb_receptions=infini, TP=tcp\n",lg_msg,port);
-        } else printf("PUITS : lg_mess_lu=%d, port=%d, nb_receptions=%d, TP=tcp\n",lg_msg,port,nb_message);
+            printf("PUITS : lg_mess_lu_max=%d, port=%d, nb_receptions=infini, TP=tcp\n",lg_message,port);
+        } else printf("PUITS : lg_mess_lu=%d, port=%d, nb_receptions=%d, TP=tcp\n",lg_message,port,nb_message);
 
 	while(1)
 	{
@@ -278,8 +301,8 @@ void tcp_puits(int port, int nb_message, int lg_msg, char* nom_station)
 
 
 		int i = 1;
-        while ((lg_msg_recu = read(sock_bis, message, lg_msg)) > 0) { 
-            afficher_message (message, lg_msg_recu);
+        while ((lg_message_recu = read(sock_bis, message, lg_message)) > 0) { 
+            afficher_message (message, lg_message_recu);
             i++;
         }
 
@@ -300,22 +323,26 @@ void tcp_puits(int port, int nb_message, int lg_msg, char* nom_station)
 	}
 }
 /*---------------------------Programme Principal-------------------------------*/
-///
+
 
 void main (int argc, char **argv)
 {
 	int c;
 	extern char *optarg;
 	extern int optind;
-	int lg_msg=30;
-	//char message[lg_msg];
+	int lg_message=30;
+	//char message[lg_message];
 	int protocole = 0; /* 0=tcp, 1=udp */
 	int port;
 	char *nom_station;
 	int nb_message = -1; /* Nb de messages à envoyer ou à recevoir, par défaut : 10 en émission, infini en réception */
 	int source = -1 ; /* 0=puits, 1=source */
+	int bal = -1 ;
+	int nb_lettres =3;
+	int nBAL = -1;
+	int recepteur;
 	
-	while ((c = getopt(argc, argv, "pn:su")) != -1) {
+	while ((c = getopt(argc, argv, "pn:sul:be:r")) != -1) {
 		switch (c) {
 		case 'p': 
 			if (source == 1) {
@@ -340,7 +367,23 @@ void main (int argc, char **argv)
 		case 'n':
 			nb_message = atoi(optarg);
 			break;
-			
+		case 'b' :
+				bal =1;
+				break;
+		case 'e':
+		bal =1;
+		recepteur =0;
+		nBAL = atoi(optarg);
+		break;
+		case 'r':
+		bal =1;
+		recepteur =1;
+		nBAL =atoi(optarg);
+		break;
+		case 'l':	
+			lg_message = atoi(optarg);
+			printf("lg_message = %d \n   ", lg_message);
+			break;
 		default:
 			printf("usage: cmd [-p|-s][-n ##]\n");
 			break;
@@ -372,11 +415,11 @@ void main (int argc, char **argv)
 		
 		if (protocole == 0) 
 		{
-			tcp_source(port, nb_message, lg_msg, nom_station);
+			tcp_source(port, nb_message, lg_message, nom_station);
 		}
 		else
 		{
-			udp_source(port, nb_message, lg_msg, nom_station);
+			udp_source(port, nb_message, lg_message, nom_station);
 		}
 		
 		
@@ -385,11 +428,41 @@ void main (int argc, char **argv)
 	if (source ==0)
 		printf("on est dans le puits\n");
 		if (protocole == 0) /*Gestion puits UDP*/
-			tcp_puits(port, nb_message, lg_msg,nom_station);
+			tcp_puits(port, nb_message, lg_message,nom_station);
 		else
-			udp_puits(port, nb_message, lg_msg);
+			udp_puits(port, nb_message, lg_message);
 		
+	
+	
+
+	//  Partie BAL 
+	if (nb_message == -1)
+	{
+		if (recepteur ==0)
+		nb_message =10;
+	}
+	if (bal==1 & recepteur==-1){
+		printf("on est dans le serveur BAL");
+		SBAL(port,nom_station);
+
+	}
+	else if (bal ==1 & recepteur == 0)
+{
+	printf("on est dans l'emetteur du BAL ");
+	EBAL(port,nom_station,nb_message,lg_message,nBAL);
 }	
+	else if(bal==1 & recepteur == 1){
+		printf("on est dans le recepteur BAL ");
+		RBAL(port,nom_station,nBAL);
+	}
+exit(0);
+}
+
+
+
+
+
+	
 
 
 

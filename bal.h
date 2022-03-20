@@ -39,13 +39,17 @@ typedef struct LETTRE
     char *message;
     struct LETTRE *suiv;
 } LETTRE;
+typedef struct LISTE_BAL
+{
+
     struct BAL *first;
     struct BAL *last;
     struct BAL *current;
     int nb;
 } LISTE_BAL;
-// Declaration des fonctions
-
+// je déclare les fonctions tout d'abord
+void construire_message (char *message, char motif, int lg_message);
+void afficher_message (char *message, int lg);
 LISTE_BAL *init_BAL();
 void add_BAL(int num, LISTE_BAL *liste);
 BAL *find_BAL(LISTE_BAL *liste, int num);
@@ -56,9 +60,7 @@ void empty(BAL *bal);
 void EBAL(int port, char *dest, int nb_message, int lg_msg, int nBAL);
 void SBAL(int port, char *dest);
 void RBAL(int port, char *dest, int nBAL);
-/*---------------------------------------------------------
-  ---------------------- Gestion BAL ----------------------
-  ---------------------------------------------------------*/
+/*--- Gérer  BAL ---*/
 LISTE_BAL *init_BAL()
 {
     LISTE_BAL *liste = (LISTE_BAL *)malloc(sizeof(struct LISTE_BAL));
@@ -78,11 +80,9 @@ void printLISTE(struct LISTE_BAL *liste)
         printf("                        BAL n°%d : %d Lettres          \n", liste->current->num, liste->current->nb);
         liste->current = liste->current->suiv;
     }
-    printf("              __________________________________________\n\n");
+    printf("\n\n");
 }
-/*---------------------------------------------------------
-  ----------- Afficher le contenu d'une BAL ---------------
-  ---------------------------------------------------------*/
+/*Affichage de la BAL */
 void printBAL(BAL *bal, int lg)
 {
     printf("Contenu de la BAL n°%d qui contient %d lettres \n", bal->num, bal->nb);
@@ -98,9 +98,7 @@ void printBAL(BAL *bal, int lg)
     }
     printf("\n\n");
 }
-/*---------------------------------------------------------
-  -------------------- Ajouter une BAL --------------------
-  ---------------------------------------------------------*/
+/*---- Ajouter une BAL ---*/
 void add_BAL(int n, LISTE_BAL *liste)
 {
     BAL *nouv = malloc(sizeof(struct BAL));
@@ -123,9 +121,7 @@ void add_BAL(int n, LISTE_BAL *liste)
     }
     liste->nb++;
 }
-/*---------------------------------------------------------
-  ---------------------- Numero  BAL ----------------------
-  ---------------------------------------------------------*/
+/*-- Numero  BAL --*/
 
 BAL *find_BAL(LISTE_BAL *liste, int num)
 {
@@ -180,9 +176,7 @@ BAL *find_BAL(LISTE_BAL *liste, int num)
     return bal;
 }
 
-/*--------------------------------------------------------
-------------------- Ajouter num fin BAL ------------------
----------------------------------------------------------*/
+/* la fin du BAL */
 void add_LETTRE(int n, int lg, BAL *bal, char *mess)
     {
         bal->nb = (bal->nb) + 1;
@@ -209,9 +203,7 @@ void add_LETTRE(int n, int lg, BAL *bal, char *mess)
         for (int i = 0; i < lg; i++)
             nouv->message[i] = mess[i];
     }
-/*---------------------------------------------------------
-  --- Detruire liste en fin d'utilisation de BAL ----------
-  ---------------------------------------------------------*/
+/*La fin de l'utilisation de BAL*/
 void empty(BAL * bal)
     {
         bal->l_current = bal->l_first;
@@ -236,24 +228,24 @@ void EBAL(int port, char *dest, int nb_message, int lg_msg, int nBAL)
         int lg_pdu = 50;
         int lg_recv;
         char *pdu = malloc(lg_pdu * sizeof(char));
-        // Etablissement de connexion
+        // Etablir la connexion
         printf("            SOURCE : Emission de lettres pour la BAL n°%d\n", nBAL);
         printf("____________________________________________________________________\n\n");
 
         sprintf(pdu, "0 %d %d %d", nBAL, nb_message, lg_msg);
 
-        //Création socket
+        //Créer le socket
         if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         {
             printf("Erreur à l'ouverture du Socket Stream");
             exit(1);
         }
-        // Construction de l'@ socket distant
+        // Créer l'adresse du socket distant
         memset((char *)&addr_distant, 0, sizeof(addr_distant));
         addr_distant.sin_family = AF_INET; //Internet
-        addr_distant.sin_port = port;      //Numéro de Port
+        addr_distant.sin_port = port;      //n port
 
-        //Affectation IP
+        
         if ((hp = gethostbyname(dest)) == NULL)
         {
             printf("Erreur de requête IP.\n");
@@ -262,7 +254,7 @@ void EBAL(int port, char *dest, int nb_message, int lg_msg, int nBAL)
 
         memcpy((char *)&(addr_distant.sin_addr.s_addr), hp->h_addr, hp->h_length);
 
-        //Demande de connexion
+        //Demander la connexion 
 
         if (connect(sock, (struct sockaddr *)&addr_distant, sizeof(addr_distant)) == -1)
         {
@@ -280,27 +272,27 @@ void EBAL(int port, char *dest, int nb_message, int lg_msg, int nBAL)
         {
             printf("SOURCE : lettre n°%d (%d) [", i, lg_msg);
 
-            //Création du message
-            construire_message(message, motif, lg_msg, i);
-            //printbuffer2(nBAL, message);
+            //Cronstruire le message
+            construire_message(message, motif, lg_msg);
+        
             afficher_message(message, lg_msg);
 
-            //Envoi du message
+            //Envoyer le message
 
-            if ((envoi = write(sock, message, (lg_msg) /*,0,(struct sockaddr*)&addr_distant,lg_addr_distant)*/)) == -1)
+            if ((envoi = write(sock, message, (lg_msg) )) == -1)
             {
                 printf("Echec de l'envoi du message (fonction write en défaut)\n");
                 exit(1);
             }
         }
-        // Fermeture de connexion
+        // Fermer la connexion 
         if (shutdown(sock, 2) == -1)
         {
             printf("Erreur à la fermeture de la connexion TCP \n");
             exit(1);
         }
 
-        //Fermeture Socket
+        //Fermer le  Socket
         if (close(sock) == -1)
         {
             printf("Echec de la fermeture du socket distant");
@@ -314,7 +306,7 @@ void EBAL(int port, char *dest, int nb_message, int lg_msg, int nBAL)
 void SBAL(int port, char *dest)
     {
         //Déclarations
-        int sock, sock2; //sock bis local orienté échanges
+        int sock, sock2; 
         struct sockaddr *addr_distant;
         struct sockaddr_in addr_local;
         int lg_addr_distant = sizeof(addr_distant);
@@ -331,7 +323,7 @@ void SBAL(int port, char *dest)
         int n = 1;
         int nBAL;
         BAL *bal = malloc(sizeof(struct BAL));
-        char *pdu; //=malloc(sizeof(char));
+        char *pdu; 
         LISTE_BAL *liste;
         // Connexion
         //Création socket local
@@ -340,13 +332,13 @@ void SBAL(int port, char *dest)
             printf("Echec de la création d'un socket local\n");
             exit(1);
         }
-        //Construction adresse socket local | Affectation port et domaine
+        //Construction adresse socket local
         memset((char *)&addr_local, 0, sizeof(addr_local));
         addr_local.sin_family = AF_INET;
         addr_local.sin_addr.s_addr = INADDR_ANY;
         addr_local.sin_port = port;
 
-        //Bind
+        //La fonction Bind
         if (bind(sock, (struct sockaddr *)&addr_local, lg_addr_local) == -1)
         {
             printf("Echec du bind.\n");
@@ -413,7 +405,7 @@ void SBAL(int port, char *dest)
                     //printf ("PDU à envoyer : %d\n",lg);
                     int lg_sent = -1;
                     nb = 1;
-                    if ((lg_sent = write(sock2, pdu, lg_pdu)) == -1) /*,0,(struct sockaddr*)&addr_distant,lg_addr_distant)*/
+                    if ((lg_sent = write(sock2, pdu, lg_pdu)) == -1) 
                     {
                         printf("Echec de l'envoi du PDU  (fonction write en défaut)\n");
                         exit(1);
@@ -430,7 +422,7 @@ void SBAL(int port, char *dest)
                         nb = bal->nb;
                         sprintf(pdu, "%d %d", lg, nb);
 
-                        if ((lg_sent = write(sock2, pdu, lg_pdu)) == -1) /*,0,(struct sockaddr*)&addr_distant,lg_addr_distant)*/
+                        if ((lg_sent = write(sock2, pdu, lg_pdu)) == -1) 
                         {
                             printf("Echec de l'envoi du PDU Emetteur (fonction write en défaut)\n");
                             exit(1);
@@ -473,7 +465,7 @@ void RBAL(int port, char *dest, int nBAL)
         struct sockaddr_in addr_distant;
         int lg_addr_distant = sizeof(addr_distant);
         struct hostent *hp;
-        char *message; //Penser au free en fin de programme pour libérer l'espace mémoire
+        char *message; 
         int envoi = -1;
         int lg_pdu = 50;
         int lg_recv = -1;
@@ -511,7 +503,7 @@ void RBAL(int port, char *dest, int nBAL)
             exit(1);
         }
         // Envoi du PDU
-        if ((envoi = write(sock, pdu, lg_pdu)) == -1) /*,0,(struct sockaddr*)&addr_distant,lg_addr_distant)*/
+        if ((envoi = write(sock, pdu, lg_pdu)) == -1) 
         {
             printf("Echec de l'envoi du PDU Emetteur (fonction write en défaut)\n");
             exit(1);
@@ -520,8 +512,8 @@ void RBAL(int port, char *dest, int nBAL)
         nb = 10;
         int n = 1;
         lg_recv = 1;
-        printf("             PUITS : Réception du contenu de la BAL n°%d\n", nBAL);
-        printf("____________________________________________________________________\n\n");
+        printf("PUITS : Réception du contenu de la BAL n°%d\n", nBAL);
+        printf("\n\n");
 
         while (n <= nb)
         {
@@ -533,7 +525,7 @@ void RBAL(int port, char *dest, int nBAL)
             sscanf(lgmsg, "%d %d", &lg, &nb);
             if (lg == -1)
             {
-                printf("       ATTENTION : Pas de courrier à récupérer dans la BAL n°%d\n\n", nBAL);
+                printf(" Pas de courrier à récupérer dans la BAL n°%d\n\n", nBAL);
                 exit(0);
             }
 
@@ -549,7 +541,7 @@ void RBAL(int port, char *dest, int nBAL)
         }
 
         printf("Fermeture de la Connexion\n");
-        //Ciao le socket
+  //fermer le socket       
         if (close(sock) == -1)
         {
             printf("Impossible de fermer le socket");
